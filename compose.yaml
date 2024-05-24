@@ -1,7 +1,10 @@
 services:
   controller:
     container_name: controller
-    restart: always
+    deploy:
+      update_config:
+        failure_action: rollback
+        order: start-first
     build:
       context: .
       dockerfile: Dockerfile
@@ -17,7 +20,6 @@ services:
     container_name: model-worker
     depends_on:
       - controller
-    restart: always
     build:
       context: .
       dockerfile: Dockerfile
@@ -34,6 +36,9 @@ services:
             - driver: nvidia
               count: all
               capabilities: [ gpu ]
+      update_config:
+        failure_action: rollback
+        order: start-first
     entrypoint:
       - "bash"
       - "/app/scripts/run_vllm_workers.sh"
@@ -42,7 +47,10 @@ services:
     depends_on:
       - controller
       - model-worker
-    restart: always
+    deploy:
+      update_config:
+        failure_action: rollback
+        order: start-first
     build:
       context: .
       dockerfile: Dockerfile
@@ -56,7 +64,10 @@ services:
       - "/app/scripts/run_api.sh"
   nginx:
     image: nginx:1.26
-    restart: always
+    deploy:
+      update_config:
+        failure_action: rollback
+        order: start-first
     container_name: nginx
     ports:
       - "8000:80"

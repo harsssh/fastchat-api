@@ -15,4 +15,5 @@ RUN git clone -b patch https://github.com/harsssh/FastChat.git && \
 
 # 追加
 RUN pip3 install vllm torch packaging ninja && pip3 install flash-attn --no-build-isolation
+RUN pip3 install accelerate
 
