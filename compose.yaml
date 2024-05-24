@@ -1,9 +1,11 @@
 services:
   controller:
     container_name: controller
+    restart: always
     deploy:
       update_config:
         failure_action: rollback
+        monitor: 30s
         order: start-first
     build:
       context: .
@@ -18,6 +20,7 @@ services:
       - "/app/scripts/run_controller.sh"
   model-worker:
     container_name: model-worker
+    restart: always
     depends_on:
       - controller
     build:
@@ -38,18 +41,21 @@ services:
               capabilities: [ gpu ]
       update_config:
         failure_action: rollback
+        monitor: 30s
         order: start-first
     entrypoint:
       - "bash"
       - "/app/scripts/run_vllm_workers.sh"
   api-server:
     container_name: api-server
+    restart: always
     depends_on:
       - controller
       - model-worker
     deploy:
       update_config:
         failure_action: rollback
+        monitor: 30s
         order: start-first
     build:
       context: .
@@ -64,9 +70,11 @@ services:
       - "/app/scripts/run_api.sh"
   nginx:
     image: nginx:1.26
+    restart: always
     deploy:
       update_config:
         failure_action: rollback
+        monitor: 30s
         order: start-first
     container_name: nginx
     ports:
