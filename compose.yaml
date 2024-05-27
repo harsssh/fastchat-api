@@ -68,6 +68,29 @@ services:
     entrypoint:
       - "bash"
       - "/app/scripts/run_api.sh"
+  ui:
+    container_name: ui
+    restart: always
+    depends_on:
+      - controller
+      - model-worker
+    deploy:
+      update_config:
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: fastchat:latest
+    env_file:
+      - .env
+    volumes:
+      - ./scripts:/app/scripts
+      - ./.htpasswd:/etc/nginx/.htpasswd
+    entrypoint:
+      - "bash"
+      - "/app/scripts/run_ui.sh"
   nginx:
     image: nginx:1.26
     restart: always
@@ -81,6 +104,5 @@ services:
       - "8000:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./allowip.conf:/etc/nginx/allowip.conf
     depends_on:
       - api-server
