@@ -11,9 +11,8 @@ RUN apt-get update -y && \
 
 # FastChat
 RUN git clone -b patch https://github.com/harsssh/FastChat.git && \
-    pip3 install -e FastChat
+    pip3 install -e 'FastChat[model_worker,webui]'
 
 # 追加
 RUN pip3 install vllm torch packaging ninja && pip3 install flash-attn --no-build-isolation
 RUN pip3 install accelerate plotly
-

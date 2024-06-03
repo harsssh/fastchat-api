@@ -73,7 +73,6 @@ services:
     restart: always
     depends_on:
       - controller
-      - model-worker
     deploy:
       update_config:
         failure_action: rollback
@@ -87,7 +86,6 @@ services:
       - .env
     volumes:
       - ./scripts:/app/scripts
-      - ./.htpasswd:/etc/nginx/.htpasswd
     entrypoint:
       - "bash"
       - "/app/scripts/run_ui.sh"
@@ -104,5 +102,4 @@ services:
       - "8000:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
-    depends_on:
-      - api-server
+      - ./.htpasswd:/etc/nginx/.htpasswd
